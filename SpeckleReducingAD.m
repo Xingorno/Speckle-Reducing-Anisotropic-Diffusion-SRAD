@@ -8,7 +8,7 @@ function despeckledImg = SpeckleReducingAD(img, iterationMaxStep, timeSize, deca
 %   - img: the input image with speckle noise; data type [any kinds of], size N*M  
 %   - interationMaxStep: the maximum iterative step; data type [integer(>0)]
 %   - thresholdCovergence: the second ending rule for iteration; data type
-%   [undine]
+%   [undefine]
 %   - timeSize: the time step in each iteration; data type [float or
 %   integer], scalar
 %   - dacayFactor: the decay factor for the exp function related to
@@ -197,11 +197,9 @@ while iterationNumber <= iterationMaxStep
     coe_i_ja1 = [coefficientDiff coefficientDiff(:,end)];
     coe_i_ja1(:,1) = [];
     
-    temp6 = coe_ia1_j.*deltaR1Img - coe_i_j.*deltaL1Img + coe_i_ja1.*deltaR2Img - coe_i_j.*deltaL2Img;
-    
+    temp6 = coe_ia1_j.*deltaR1Img - coe_i_j.*deltaL1Img + coe_i_ja1.*deltaR2Img - coe_i_j.*deltaL2Img;   
     div = temp6/spatialSize;
-    
-    
+
     % STEP4: define the iteration rule
     Img_i_j = img_i_j + (timeSize/4)*div;
     
@@ -223,21 +221,12 @@ despeckledImg = img.*mask;
 
 [ROW_, COL_] = size(Img_i_j);
 
-
 for i = 1: ROW_
-    for j = 1:COL_
-        
+    for j = 1:COL_ 
         despeckledImg(i*spatialSize, j*spatialSize) = Img_i_j(i,j);
-        
     end
 end
 
 % restore the original data type
 despeckledImg = cast(despeckledImg, originalClass);
-
-
-
-
-
-
 end
