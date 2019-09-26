@@ -7,11 +7,14 @@ function despeckledImg = SpeckleReducingAD_New(img, iterationMaxStep, timeSize, 
 %   - img: the input image with speckle noise; data type [any kinds of], size N*M  
 %   - interationMaxStep: the maximum iterative step; data type [integer(>0)]
 %   - thresholdCovergence: the second ending rule for iteration; data type
-%   [undefine]
+%       [undefine]
 %   - timeSize: the time step in each iteration; data type [float or
-%   integer], scalar
+%        integer], scalar
 %   - dacayFactor: the decay factor for the exp function related to
-%   "smoothing and edge preserving"; data type [float, integer]. scalar
+%       "smoothing and edge preserving"; data type [float, integer]. scalar
+%   NOTE: the higher decayFactor, the faster decay and become sharper
+%         the lower decayFactor, the slower decay and become smoother
+%   - conductionMethod: "exponential" or "quadratic"
 
 % Output:
 %   - despeckledImg: the despeckled image; data type [same as the img], size
@@ -23,6 +26,8 @@ function despeckledImg = SpeckleReducingAD_New(img, iterationMaxStep, timeSize, 
 % Reference: 
 %  - Yu, Yongjian, and Scott T. Acton. "Speckle reducing anisotropic diffusion." IEEE Transactions on image processing 11.11 (2002): 1260-1270.
 %  - Matlab function: imdiffusefilt(*)
+
+%%%---------------------------------------------------------------------------------------------------------------------------------------------------
 
 %
 % INPUT PARAMETERS
@@ -72,7 +77,7 @@ function despeckledImg = SpeckleReducingAD_New(img, iterationMaxStep, timeSize, 
     Q = q; 
     %Note:the initial value about Q0 is very very important
     Q0 = logical(Q);
-    Q0 = single(Q0);
+    Q0 = single(Q0)*0.5;
     Img_i_j = img_i_j;
 
 %%
@@ -126,8 +131,7 @@ while iterationNumber <= iterationMaxStep
     
 %
 % STEP3: CACULATE THE DIVERGENCE OF DIFFUSION FUNCTION
-%
-    
+%   
     coe_i_j = coefficientDiff;   
     coe_ia1_j = [coefficientDiff; coefficientDiff(end,:)];
     coe_ia1_j(1,:) = [];   
