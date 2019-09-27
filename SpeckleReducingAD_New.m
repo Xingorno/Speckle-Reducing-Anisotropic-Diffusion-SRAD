@@ -41,7 +41,7 @@ function despeckledImg = SpeckleReducingAD_New(img, iterationMaxStep, timeSize, 
     diviationConvergence = 1; % the convergence diviation each iteratio
     originalClass = class(img);
     epsilon = 10^(-13); % handle 0/0 case
-
+    FLAG_SRAD_WAIT = 1;
     if ~isa(img,'double')
         img = single(img);
     end
@@ -74,14 +74,19 @@ function despeckledImg = SpeckleReducingAD_New(img, iterationMaxStep, timeSize, 
     temp2 = 1+0.25*delta2ImgNormal;
     temp3 = temp2.*temp2;
     q = sqrt(temp1./temp3);
-    Q = q; 
-    %Note:the initial value about Q0 is very very important
-    Q0 = logical(Q);
-    Q0 = single(Q0)*0.5;
+%     Q = q; 
+%     %Note:the initial value about Q0 is very very important
+%     Q0 = logical(Q);
+%     Q0 = single(Q0)*0.5;
     Img_i_j = img_i_j;
+    % wait bar
+    if FLAG_SRAD_WAIT
+        hwait = waitbar(0,'SRAD: Diffusing Image');
+    end
 
 %%
 while iterationNumber <= iterationMaxStep 
+
     
     img_i_j = Img_i_j;
 %
@@ -111,10 +116,15 @@ while iterationNumber <= iterationMaxStep
     temp1 = (deltaImgNormal.*deltaImgNormal)*0.5 - delta2ImgNormal.*delta2ImgNormal/16;
     temp2 = 1+0.25*delta2ImgNormal;
     temp3 = temp2.*temp2;
-    q = sqrt(temp1./temp3);
-    q0 = Q0*exp(-decayFactor*t);
-    
-    temp4 = q0.*q0;
+    q = sqrt(temp1./(temp3+epsilon));
+    imgMask = logical(img_i_j);
+    maskedImg = single(imgMask).*img_i_j;
+    vectoriedImg = maskedImg(find(maskedImg>0));
+    q0_squared = var(vectoriedImg(:)) / (mean(vectoriedImg(:))^2)
+%     q0 = Q0*exp(-decayFactor*t);
+
+%     temp4 = q0.*q0;
+    temp4 = q0_squared;
     temp5 = q.*q;
     
     switch conductionMethod
@@ -132,6 +142,9 @@ while iterationNumber <= iterationMaxStep
 %
 % STEP3: CACULATE THE DIVERGENCE OF DIFFUSION FUNCTION
 %   
+    coefficientDiff(coefficientDiff>1) = 1;
+    coefficientDiff(coefficientDiff<0) = 0;
+    
     coe_i_j = coefficientDiff;   
     coe_ia1_j = [coefficientDiff; coefficientDiff(end,:)];
     coe_ia1_j(1,:) = [];   
@@ -146,6 +159,11 @@ while iterationNumber <= iterationMaxStep
     Img_i_j = img_i_j + (timeSize/4)*div;
     t = t + timeSize; 
     iterationNumber = iterationNumber + 1;  
+    
+    % update waitbar
+    if FLAG_SRAD_WAIT
+        waitbar(iterationNumber/iterationMaxStep,hwait);
+    end
 end
 
 %
@@ -164,5 +182,9 @@ end
 
     % restore the original data type
     despeckledImg = cast(despeckledImg, originalClass);
+    % close wait bar
+    if FLAG_SRAD_WAIT
+        close(hwait); 
+    end
 
 end
