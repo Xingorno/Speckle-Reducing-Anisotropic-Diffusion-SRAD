@@ -23,3 +23,6 @@ Note: the most important part of the model is to define the diffusion function
 
 # Pseudocode
 ![pseudocode](https://github.com/Xingorno/Figures/blob/master/Image_Folder/pseudocode.png?raw=true)
+
+# Python implementation
+Thanks to [namioj](https://github.com/namioj). The python implementation is being added as well. Please see the [issue section](https://github.com/Xingorno/Speckle-Reducing-Anisotropic-Diffusion-SRAD/issues/1#issuecomment-1023787900)
