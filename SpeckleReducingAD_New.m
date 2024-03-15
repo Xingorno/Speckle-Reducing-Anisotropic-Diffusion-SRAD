@@ -5,7 +5,7 @@ function despeckledImg = SpeckleReducingAD_New(img, iterationMaxStep, timeSize, 
 
 % Input:
 %   - img: the input image with speckle noise; data type [any kinds of], size N*M  
-%   - interationMaxStep: the maximum iterative step; data type [integer(>0)]
+%   - iterationMaxStep: the maximum iterative step; data type [integer(>0)]
 %   - thresholdCovergence: the second ending rule for iteration; data type
 %       [undefine]
 %   - timeSize: the time step in each iteration; data type [float or
@@ -100,7 +100,7 @@ while iterationNumber <= iterationMaxStep
     delta2Img = delta2Img_/(spatialSize*spatialSize);
     
 %
-% STEP2: CACULATE THE DIFFUSION COEFFICIENT
+% STEP2: CALCULATE THE DIFFUSION COEFFICIENT
 %
     
     % normalizing the gradient of each image point 
@@ -140,7 +140,7 @@ while iterationNumber <= iterationMaxStep
     end
     
 %
-% STEP3: CACULATE THE DIVERGENCE OF DIFFUSION FUNCTION
+% STEP3: CALCULATE THE DIVERGENCE OF DIFFUSION FUNCTION
 %   
     coefficientDiff(coefficientDiff>1) = 1;
     coefficientDiff(coefficientDiff<0) = 0;
